@@ -2573,7 +2573,26 @@ void HMI_Control() {
   void HMI_Leveling() {
     Popup_Window_Leveling();
     DWIN_UpdateLCD();
-    queue.inject_P(PSTR("G28O\nG29"));
+    //queue.inject_P(PSTR("G28O\nG29"));
+    /**
+     * Custom bed levelling G-Code found here: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/blob/master/wiki/gcode-examples.md
+     * NOTE: Removed the M155 and @BEDLEVELVISUALIZER steps specific to the OctoPrint Bed Level Visualizer plugin
+     * 
+     * M140 S60 ; starting by heating the bed for nominal mesh accuracy
+     * M117 Homing all axes ; send message to printer display
+     * G28      ; home all axes
+     * M117 Heating the bed ; send message to printer display
+     * M190 S60 ; waiting until the bed is fully warmed up
+     * M300 S1000 P500 ; chirp to indicate bed mesh levels is initializing
+     * M117 Creating the bed mesh levels ; send message to printer display
+     * G29 T	   ; run bilinear probing
+     * M140 S0 ; cooling down the bed
+     * M300 S440 P200 ; make calibration completed tones
+     * M300 S660 P250
+     * M300 S880 P300
+     * M117 Bed mesh levels completed ; send message to printer display
+    */
+    queue.inject_P(PSTR("G280\nM140 S60\nM117 Homing all axes\nG28\nM117 Heating the bed\nM190 S60\nM300 S1000 P500\nM117 Creating the bed mesh levels\nM155 S30\nG29 T\nM140 S0\nM300 S440 P200\nM300 S660 P250\nM300 S880 P300\nM117 Bed mesh levels completed"));
   }
 
 #endif
